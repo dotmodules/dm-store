@@ -17,22 +17,6 @@ set -e  # exit on error
 set -u  # prevent unset variable expansion
 
 #==============================================================================
-# ENVIRONMENT SETUP
-#==============================================================================
-
-DM_STORE__STORE_FILE__NAME='dm-store.store'
-
-if [ -z "${DM_STORE__STORE_FILE__PATH+x}" ]
-then
-  if [ -z "${XDG_STATE_HOME+x}" ]
-  then
-    DM_STORE__STORE_FILE__PATH="${HOME}/.local/state/${DM_STORE__STORE_FILE__NAME}"
-  else
-    DM_STORE__STORE_FILE__PATH="${XDG_STATE_HOME}/${DM_STORE__STORE_FILE__NAME}"
-  fi
-fi
-
-#==============================================================================
 # PATH CHANGE
 #==============================================================================
 
@@ -69,6 +53,24 @@ DM_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX='..'
 . "${DM_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX}/dm.store.sh"
 
 #==============================================================================
+# ENVIRONMENT SETUP
+#==============================================================================
+
+DM_STORE__STORE_FILE__NAME='dm-store.store'
+
+if [ -z "${DM_STORE__STORE_FILE__PATH+x}" ]
+then
+  if [ -z "${XDG_STATE_HOME+x}" ]
+  then
+    DM_STORE__STORE_FILE__PATH="${HOME}/.local/state/${DM_STORE__STORE_FILE__NAME}"
+  else
+    DM_STORE__STORE_FILE__PATH="${XDG_STATE_HOME}/${DM_STORE__STORE_FILE__NAME}"
+  fi
+fi
+
+DM_STORE__VERSION="$(dm_tools__cat '../VERSION')"
+
+#==============================================================================
 # COLOR MANAGEMENT
 #==============================================================================
 
@@ -99,7 +101,16 @@ fi
 
 DM_STORE__HELP="$(cat <<-END
 
-${BOLD}DM-STORE${RESET} usage
+${BOLD}NAME${RESET}
+
+    ${BOLD}dm-store${RESET} - simple key-value store ${DM_STORE__VERSION}
+
+    Permanent key-value store  solution with no external dependencies written
+    in POSIX compliant shell. Entries will be saved into the store file in an
+    encoded way,  that means an entry  can hold arbitrary lines  of arbitrary
+    characters.
+
+${BOLD}SYNOPSYS${RESET}
 
     ${BOLD}dm-store [--debug] set <key> <value>${RESET}
     ${BOLD}dm-store [--debug] get <key>${RESET}
@@ -107,14 +118,9 @@ ${BOLD}DM-STORE${RESET} usage
     ${BOLD}dm-store [--debug] list${RESET}
     ${BOLD}dm-store [--debug] (delete|del) <key>${RESET}
     ${BOLD}dm-store [--debug] (clear|reset)${RESET}
-    ${BOLD}dm-store (help|--help|-h)${RESET}
+    ${BOLD}dm-store [--help] ${RESET}
 
-    Permanent key-value store  solution with no external dependencies written
-    in POSIX compliant shell. Entries will be saved into the store file in an
-    encoded way,  that means an entry  can hold arbitrary lines  of arbitrary
-    characters.
-
-${BOLD}ENVIRONMENT VARIABLES${RESET}
+${BOLD}ENVIRONMENT${RESET}
 
     ${BOLD}DM_STORE__STORE_FILE__PATH${RESET}
 
@@ -124,39 +130,49 @@ ${BOLD}ENVIRONMENT VARIABLES${RESET}
 
 ${BOLD}DESCRIPTION${RESET}
 
-    ${BOLD}dm-store set <key> <value>${RESET}
+    ${BOLD}set <key> <value>${RESET}
 
     Sets the given value for the given key.  If the key already exists in the
     store it will be overridden.    You can use arbitrary characters and even
     multiple lines  for  the  keys  and  values as they will be  stored in an
     encoded way (ascii armored hexadecimal form).
 
-    ${BOLD}dm-store get <key>${RESET}
+    ${BOLD}get <key>${RESET}
 
     Retrieve the value for the previously set key. If the key does not exist,
     the call will fail with the status code of ${BOLD}1${RESET}.
 
-    ${BOLD}dm-store keys${RESET}
+    ${BOLD}keys${RESET}
 
     Print all registered keys by one key per line.  If the  store is empty it
     will fail with the status code of ${BOLD}1${RESET}.
 
-    ${BOLD}dm-store list${RESET}
+    ${BOLD}list${RESET}
 
     List the content of the store in the following format ${BOLD}'<key>': '<value>'${RESET}
     by one entry  per line.  If  the store is  empty  it  will fail with  the
     status code of ${BOLD}1${RESET}.
 
-    ${BOLD}dm-store delete <key>${RESET}
+    ${BOLD}delete <key>${RESET}
 
     Delete the value for the previously set key.  If the key  does not exist,
     the call will fail with the status code of ${BOLD}1${RESET}.
 
-    ${BOLD}dm-store (clear|reset)${RESET}
+    ${BOLD}(clear|reset)${RESET}
 
     Removes all entries from the store, but prompts before doing so.
 
-    ${BOLD}dm-store [--debug] <..>${RESET}
+${BOLD}OPTIONS${RESET}
+
+    ${BOLD}--help${RESET}
+
+    Prints out this help message then exits.
+
+    ${BOLD}--version${RESET}
+
+    Prints out the version then exits.
+
+    ${BOLD}--debug${RESET}
 
     Prints out debug messages during operation  if applicable on the standard
     error output.
@@ -193,7 +209,7 @@ dm_store__report_invalid_parameters() {
 while [ "$#" -gt '0' ]
 do
   case "$1" in
-    help|--help|-h )
+    --help )
       dm_tools__echo "$DM_STORE__HELP"
       exit 0
       ;;
@@ -251,6 +267,11 @@ do
       # This debug variable will be used in the store lib.
       # shellcheck disable=SC2034
       DM_STORE__CONFIG__OPTIONAL__DEBUG_ENABLED='1'
+      shift
+      ;;
+    --version )
+      dm_tools__cat '../VERSION'
+      exit 0
       shift
       ;;
     --[!-]* )
