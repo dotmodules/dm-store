@@ -1,0 +1,312 @@
+#!/bin/sh
+#==============================================================================
+#       _                     _
+#      | |                   | |
+#    __| |_ __ ___ ______ ___| |_ ___  _ __ ___
+#   / _` | '_ ` _ \______/ __| __/ _ \| '__/ _ \
+#  | (_| | | | | | |     \__ \ || (_) | | |  __/
+#   \__,_|_| |_| |_|     |___/\__\___/|_|  \___|
+#
+#==============================================================================
+
+#==============================================================================
+# SANE ENVIRONMENT
+#==============================================================================
+
+set -e  # exit on error
+set -u  # prevent unset variable expansion
+
+#==============================================================================
+# ENVIRONMENT SETUP
+#==============================================================================
+
+DM_STORE__STORE_FILE__NAME='dm-store.store'
+
+if [ -z "${DM_STORE__STORE_FILE__PATH+x}" ]
+then
+  if [ -z "${XDG_STATE_HOME+x}" ]
+  then
+    DM_STORE__STORE_FILE__PATH="${HOME}/.local/state/${DM_STORE__STORE_FILE__NAME}"
+  else
+    DM_STORE__STORE_FILE__PATH="${XDG_STATE_HOME}/${DM_STORE__STORE_FILE__NAME}"
+  fi
+fi
+
+#==============================================================================
+# PATH CHANGE
+#==============================================================================
+
+# This is the only part where the code has to be prepared for missing tool
+# capabilities. It is known that on MacOS readlink does not support the -f flag
+# by default.
+if target_path="$(readlink -f "$0" 2>/dev/null)"
+then
+  cd "$(dirname "$target_path")"
+else
+  # If the path cannot be determined with readlink, we have to check if this
+  # script is executed through a symlink or not.
+  if [ -L "$0" ]
+  then
+    # If the current script is executed through a symlink, we are out of luck,
+    # because without readlink, there is no universal solution for this problem
+    # that uses the default shell toolset.
+    echo "symlinked script won't work on this machine.."
+  else
+    cd "$(dirname "$0")"
+  fi
+fi
+
+#==============================================================================
+# LIBRARY SOURCE POINT
+#==============================================================================
+
+# Relative path from the current path to the dm store repo root. Since this
+# script is only linked to a directory that is available in the PATH, the
+# execution will happen in place here in the repository bin directory.
+DM_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX='..'
+
+# shellcheck source=../dm.store.sh
+. "${DM_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX}/dm.store.sh"
+
+#==============================================================================
+# COLOR MANAGEMENT
+#==============================================================================
+
+# Checking the availibility and usability of tput. If it is available and
+# usable we can set the global coloring variables with it by expecting a
+# possibly missing color/modifier.
+if dm_tools__tput__is_available
+then
+  RED="$(dm_tools__tput setaf 1)"
+  BLUE="$(dm_tools__tput setaf 4)"
+  RESET="$(dm_tools__tput sgr0)"
+  BOLD="$(dm_tools__tput bold)"
+  DIM="$(dm_tools__tput dim)"
+else
+  RED=''
+  # Used internally by the library.
+  # shellcheck disable=SC2034
+  BLUE=''
+  RESET=''
+  # Used internally by the library.
+  # shellcheck disable=SC2034
+  DIM=''
+fi
+
+#==============================================================================
+# HELP
+#==============================================================================
+
+DM_STORE__HELP="$(cat <<-END
+
+${BOLD}DM-STORE${RESET} usage
+
+    ${BOLD}dm-store [--debug] set <key> <value>${RESET}
+    ${BOLD}dm-store [--debug] get <key>${RESET}
+    ${BOLD}dm-store [--debug] keys${RESET}
+    ${BOLD}dm-store [--debug] list${RESET}
+    ${BOLD}dm-store [--debug] (delete|del) <key>${RESET}
+    ${BOLD}dm-store [--debug] (clear|reset)${RESET}
+    ${BOLD}dm-store (help|--help|-h)${RESET}
+
+    Permanent key-value store  solution with no external dependencies written
+    in POSIX compliant shell. Entries will be saved into the store file in an
+    encoded way,  that means an entry  can hold arbitrary lines  of arbitrary
+    characters.
+
+${BOLD}ENVIRONMENT VARIABLES${RESET}
+
+    ${BOLD}DM_STORE__STORE_FILE__PATH${RESET}
+
+    Location of the store file. If not defined separately, it will default to
+    ${BOLD}\$XDG_STATE_HOME$/${DM_STORE__STORE_FILE__NAME}${RESET} or if ${BOLD}\$XDG_STATE_HOME${RESET} is not set, it will
+    default to ${BOLD}\$HOME/.local/state/${DM_STORE__STORE_FILE__NAME}${RESET}.
+
+${BOLD}DESCRIPTION${RESET}
+
+    ${BOLD}dm-store set <key> <value>${RESET}
+
+    Sets the given value for the given key.  If the key already exists in the
+    store it will be overridden.    You can use arbitrary characters and even
+    multiple lines  for  the  keys  and  values as they will be  stored in an
+    encoded way (ascii armored hexadecimal form).
+
+    ${BOLD}dm-store get <key>${RESET}
+
+    Retrieve the value for the previously set key. If the key does not exist,
+    the call will fail with the status code of ${BOLD}1${RESET}.
+
+    ${BOLD}dm-store keys${RESET}
+
+    Print all registered keys by one key per line.  If the  store is empty it
+    will fail with the status code of ${BOLD}1${RESET}.
+
+    ${BOLD}dm-store list${RESET}
+
+    List the content of the store in the following format ${BOLD}'<key>': '<value>'${RESET}
+    by one entry  per line.  If  the store is  empty  it  will fail with  the
+    status code of ${BOLD}1${RESET}.
+
+    ${BOLD}dm-store delete <key>${RESET}
+
+    Delete the value for the previously set key.  If the key  does not exist,
+    the call will fail with the status code of ${BOLD}1${RESET}.
+
+    ${BOLD}dm-store (clear|reset)${RESET}
+
+    Removes all entries from the store, but prompts before doing so.
+
+    ${BOLD}dm-store [--debug] <..>${RESET}
+
+    Prints out debug messages during operation  if applicable on the standard
+    error output.
+
+${BOLD}AUTHOR${RESET}
+
+    ${BOLD}Tibor Simon${RESET} - while working on the ${BOLD}dotmodules${RESET} project.
+END
+)"
+
+#==============================================================================
+# PARAMETER PARSING
+#==============================================================================
+
+DM_STORE__CONSTANT__MODE__SET='0'
+DM_STORE__CONSTANT__MODE__GET='1'
+DM_STORE__CONSTANT__MODE__KEYS='2'
+DM_STORE__CONSTANT__MODE__LIST='3'
+DM_STORE__CONSTANT__MODE__DELETE='4'
+DM_STORE__CONSTANT__MODE__CLEAR='5'
+
+DM_STORE__RUNTIME__MODE='__INVALID__'
+DM_STORE__RUNTIME__KEY='__INVALID__'
+DM_STORE__RUNTIME__VALUE='__INVALID__'
+
+dm_store__report_invalid_parameters() {
+  ___reason="$1"
+  ___details="$2"
+  echo "${RED}${BOLD}$___reason${RESET}"
+  echo "${RED}$___details${RESET}"
+  exit 1
+}
+
+while [ "$#" -gt '0' ]
+do
+  case "$1" in
+    help|--help|-h )
+      dm_tools__echo "$DM_STORE__HELP"
+      exit 0
+      ;;
+    set )
+      if [ "$#" -lt '3' ]
+      then
+        dm_store__report_invalid_parameters \
+          'Insufficient [set] parameter count!' \
+          'The [set] operation requires a <key> and <value> parameter.'
+      fi
+      DM_STORE__RUNTIME__MODE="$DM_STORE__CONSTANT__MODE__SET"
+      DM_STORE__RUNTIME__KEY="$2"
+      DM_STORE__RUNTIME__VALUE="$3"
+      shift
+      shift
+      shift
+      ;;
+    get )
+      if [ "$#" -lt '2' ]
+      then
+        dm_store__report_invalid_parameters \
+          'Insufficient [get] parameter count!' \
+          'The [get] operation requires a <key> parameter.'
+      fi
+      DM_STORE__RUNTIME__MODE="$DM_STORE__CONSTANT__MODE__GET"
+      DM_STORE__RUNTIME__KEY="$2"
+      shift
+      shift
+      ;;
+    keys )
+      DM_STORE__RUNTIME__MODE="$DM_STORE__CONSTANT__MODE__KEYS"
+      shift
+      ;;
+    list )
+      DM_STORE__RUNTIME__MODE="$DM_STORE__CONSTANT__MODE__LIST"
+      shift
+      ;;
+    delete|del )
+      if [ "$#" -lt '2' ]
+      then
+        dm_store__report_invalid_parameters \
+          'Insufficient [delete] parameter count!' \
+          'The [delete] operation requires a <key> parameter.'
+      fi
+      DM_STORE__RUNTIME__MODE="$DM_STORE__CONSTANT__MODE__DELETE"
+      DM_STORE__RUNTIME__KEY="$2"
+      shift
+      shift
+      ;;
+    clear|reset )
+      DM_STORE__RUNTIME__MODE="$DM_STORE__CONSTANT__MODE__CLEAR"
+      shift
+      ;;
+    --debug )
+      # This debug variable will be used in the store lib.
+      # shellcheck disable=SC2034
+      DM_STORE__CONFIG__OPTIONAL__DEBUG_ENABLED='1'
+      shift
+      ;;
+    --[!-]* )
+      dm_store__report_invalid_parameters \
+        "Unexpected option '${1}'!" \
+        'You can only use the --debug option.'
+      ;;
+    -[!-]* )
+      dm_store__report_invalid_parameters \
+        "Invalid single dashed option '${1}'!" \
+        "dm-store only uses double dashed options like '--option'."
+      ;;
+    * )
+      dm_store__report_invalid_parameters \
+        'Unexpected parameter!' \
+        "Parameter '${1}' is unexpected!"
+      ;;
+  esac
+done
+
+#==============================================================================
+# ENTRY POINT
+#==============================================================================
+
+dm_store__init "$DM_STORE__STORE_FILE__PATH"
+
+case "$DM_STORE__RUNTIME__MODE" in
+  "$DM_STORE__CONSTANT__MODE__SET" )
+    dm_store__set "$DM_STORE__RUNTIME__KEY" "$DM_STORE__RUNTIME__VALUE"
+    ;;
+  "$DM_STORE__CONSTANT__MODE__GET" )
+    dm_store__get "$DM_STORE__RUNTIME__KEY"
+    ;;
+  "$DM_STORE__CONSTANT__MODE__KEYS" )
+    dm_store__keys
+    ;;
+  "$DM_STORE__CONSTANT__MODE__LIST" )
+    dm_store__list
+    ;;
+  "$DM_STORE__CONSTANT__MODE__DELETE" )
+    dm_store__delete "$DM_STORE__RUNTIME__KEY"
+    ;;
+  "$DM_STORE__CONSTANT__MODE__CLEAR" )
+    dm_tools__printf '%s' 'Do you really want to clear the store? [y/N] '
+    read -r decision
+    case $decision in
+      y|Y )
+        dm_tools__rm --force --verbose "$DM_STORE__STORE_FILE__PATH"
+        dm_tools__echo 'Store content deleted!'
+        ;;
+      * )
+        ;;
+    esac
+    ;;
+  * )
+    dm_tools__echo "$DM_STORE__HELP"
+    exit 0
+    ;;
+esac
