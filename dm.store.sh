@@ -1,13 +1,13 @@
 #!/bin/sh
 #==============================================================================
-#       _                 _                       _
-#      | |               | |                     | |
-#    __| |_ __ ___    ___| |_ ___  _ __ ___   ___| |__
-#   / _` | '_ ` _ \  / __| __/ _ \| '__/ _ \ / __| '_ \
-#  | (_| | | | | | |_\__ \ || (_) | | |  __/_\__ \ | | |
-#   \__,_|_| |_| |_(_)___/\__\___/|_|  \___(_)___/_| |_|
-#
-#==============================================================================
+#                   _              _                       _
+#                  (_)            | |                     | |
+#   _ __   ___  ___ ___  __    ___| |_ ___  _ __ ___   ___| |__
+#  | '_ \ / _ \/ __| \ \/ /   / __| __/ _ \| '__/ _ \ / __| '_ \
+#  | |_) | (_) \__ \ |>  < ___\__ \ || (_) | | |  __/_\__ \ | | |
+#  | .__/ \___/|___/_/_/\_|___|___/\__\___/|_|  \___(_)___/_| |_|
+#  | |
+#==|_|=========================================================================
 
 #==============================================================================
 # SANE ENVIRONMENT
@@ -85,12 +85,13 @@ dm_store__report_error_and_exit() {
 #==============================================================================
 
 #==============================================================================
-# For better readability dm.store.sh is composed from smaller scripts that are
-# sourced into it dynamically. As dm.store.sh is imported to the user codebase
-# by sourcing, the conventional path determination cannot be used. The '$0'
-# variable contains the the host script's path dm.store.sh is sourced from. The
-# relative path from the sourceing code to the root of the dm-store subrepo has
-# to be defined explicitly to the internal sourcing could be executed.
+# For better readability posix_store.sh is composed from smaller scripts that
+# are sourced into it dynamically. As posix_store.sh is imported to the user
+# codebase by sourcing, the conventional path determination cannot be used. The
+# '$0' variable contains the the host script's path posix_store.sh is sourced
+# from. The relative path from the sourceing code to the root of the
+# posix_store subrepo has to be defined explicitly to the internal sourcing
+# could be executed.
 #==============================================================================
 
 if [ -z ${DM_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX+x} ]
@@ -104,29 +105,29 @@ fi
 ___path_prefix="${DM_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX}"
 
 #==============================================================================
-# DM_TOOLS INTEGRATION
+# POSIX_ADAPTER INTEGRATION
 #==============================================================================
 
-if [ -z ${DM_TOOLS__READY+x} ]
+if [ -z ${POSIX_ADAPTER+x} ]
 then
-  # If dm_tools has not sourced yet, we have to source it from this repository.
-  ___dm_tools_path_prefix="${___path_prefix}/dependencies/dm-tools"
-  DM_TOOLS__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX="$___dm_tools_path_prefix"
-  if [ -d  "$DM_TOOLS__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX" ]
+  # If posix_adapter has not sourced yet, we have to source it from this repository.
+  ___posix_adapter_path_prefix="${___path_prefix}/dependencies/posix-adapter"
+  POSIX_ADAPTER__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX="$___posix_adapter_path_prefix"
+  if [ -d  "$POSIX_ADAPTER__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX" ]
   then
-    # shellcheck source=./dependencies/dm-tools/dm.tools.sh
-    . "${DM_TOOLS__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX}/dm.tools.sh"
+    # shellcheck source=./dependencies/posix_adapter/posix_adapter.sh
+    . "${POSIX_ADAPTER__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX}/posix_adapter.sh"
   else
     dm_store__report_error_and_exit \
       'Initialization failed!' \
-      'dm_tools needs to be initialized but its git submodule is missing!' \
+      'posix_adapter needs to be initialized but its git submodule is missing!' \
       'You need to source it or init its submodule here: git submodule init'
   fi
 fi
 
 # IMPORTANT: After this, every non shell built-in command should be called
-# through the provided dm_tools API to ensure the compatibility on different
-# environments.
+# through the provided posix_adapter API to ensure the compatibility on
+# different environments.
 
 #==============================================================================
 # SOURCING SUBMODULES

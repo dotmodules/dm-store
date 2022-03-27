@@ -61,7 +61,7 @@ dm_store__debug__printf() {
   # This function behaves like a proxy thus having parameters in the first
   # argument of printf is okay in this case.
   # shellcheck disable=SC2059
-  >&5 dm_tools__printf "$@"
+  >&5 posix_adapter__printf "$@"
 }
 
 #==============================================================================
@@ -165,7 +165,7 @@ dm_store__debug_list() {
 
     dm_store__debug "$___debug_domain" "$___debug_message"
 
-    dm_tools__echo "$___debug_list" | while IFS= read -r ___debug_list_item
+    posix_adapter__echo "$___debug_list" | while IFS= read -r ___debug_list_item
     do
       dm_store__debug "$___debug_domain" "- '${___debug_list_item}'"
     done

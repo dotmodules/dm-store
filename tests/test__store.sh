@@ -98,7 +98,7 @@ dm_store__set "$key" '9'
 
 expected='1'
 
-if result="$(dm_tools__wc --lines < "$DM_STORE__RUNTIME__STORAGE_FILE")"
+if result="$(posix_adapter__wc --lines < "$DM_STORE__RUNTIME__STORAGE_FILE")"
 then
   dm_store__test__assert_equal "$expected" "$result"
 else
@@ -115,8 +115,8 @@ key="key"
 value_1='line 1'
 value_2='line 2'
 value="$( \
-  dm_tools__echo "$value_1"; \
-  dm_tools__echo "$value_2"; \
+  posix_adapter__echo "$value_1"; \
+  posix_adapter__echo "$value_2"; \
 )"
 
 dm_store__init "$TEMP_STORE_FILE_PATH"
@@ -124,7 +124,7 @@ dm_store__set "$key" "$value"
 
 expected='2'
 
-if result="$(dm_store__get "$key" | dm_tools__wc --lines)"
+if result="$(dm_store__get "$key" | posix_adapter__wc --lines)"
 then
   dm_store__test__assert_equal "$expected" "$result"
 else
@@ -136,7 +136,7 @@ dm_store__test__valid_case 'store - multiline values can be stored 2'
 
 expected="$value_1"
 
-if result="$(dm_store__get "$key" | dm_tools__sed --expression '1q;d')"
+if result="$(dm_store__get "$key" | posix_adapter__sed --expression '1q;d')"
 then
   dm_store__test__assert_equal "$expected" "$result"
 else
@@ -148,7 +148,7 @@ dm_store__test__valid_case 'store - multiline values can be stored 3'
 
 expected="$value_2"
 
-if result="$(dm_store__get "$key" | dm_tools__sed --expression '2q;d')"
+if result="$(dm_store__get "$key" | posix_adapter__sed --expression '2q;d')"
 then
   dm_store__test__assert_equal "$expected" "$result"
 else
@@ -162,14 +162,14 @@ dm_store__test__valid_case 'store - even multiline keys can be used 1'
 rm -f "$TEMP_STORE_FILE_PATH"
 
 key="$( \
-  dm_tools__echo 'key line 1'; \
-  dm_tools__echo 'key line 2'; \
+  posix_adapter__echo 'key line 1'; \
+  posix_adapter__echo 'key line 2'; \
 )"
 value_1='line 1'
 value_2='line 2'
 value="$( \
-  dm_tools__echo "$value_1"; \
-  dm_tools__echo "$value_2"; \
+  posix_adapter__echo "$value_1"; \
+  posix_adapter__echo "$value_2"; \
 )"
 
 dm_store__init "$TEMP_STORE_FILE_PATH"
@@ -177,7 +177,7 @@ dm_store__set "$key" "$value"
 
 expected='2'
 
-if result="$(dm_store__get "$key" | dm_tools__wc --lines)"
+if result="$(dm_store__get "$key" | posix_adapter__wc --lines)"
 then
   dm_store__test__assert_equal "$expected" "$result"
 else
@@ -190,7 +190,7 @@ dm_store__test__valid_case 'store - even multiline keys can be used 2'
 
 expected="$value_1"
 
-if result="$(dm_store__get "$key" | dm_tools__sed --expression '1q;d')"
+if result="$(dm_store__get "$key" | posix_adapter__sed --expression '1q;d')"
 then
   dm_store__test__assert_equal "$expected" "$result"
 else
@@ -203,7 +203,7 @@ dm_store__test__valid_case 'store - even multiline keys can be used 3'
 
 expected="$value_2"
 
-if result="$(dm_store__get "$key" | dm_tools__sed --expression '2q;d')"
+if result="$(dm_store__get "$key" | posix_adapter__sed --expression '2q;d')"
 then
   dm_store__test__assert_equal "$expected" "$result"
 else
@@ -225,7 +225,7 @@ dm_store__set "$key_2" 'value'
 
 expected='2'
 
-if result="$(dm_store__keys | dm_tools__wc --lines)"
+if result="$(dm_store__keys | posix_adapter__wc --lines)"
 then
   dm_store__test__assert_equal "$expected" "$result"
 else
@@ -238,7 +238,7 @@ dm_store__test__valid_case 'store - keys can be listed 2'
 
 expected="$key_1"
 
-if result="$(dm_store__keys | dm_tools__sed --expression '1q;d')"
+if result="$(dm_store__keys | posix_adapter__sed --expression '1q;d')"
 then
   dm_store__test__assert_equal "$expected" "$result"
 else
@@ -251,7 +251,7 @@ dm_store__test__valid_case 'store - keys can be listed 3'
 
 expected="$key_2"
 
-if result="$(dm_store__keys | dm_tools__sed --expression '2q;d')"
+if result="$(dm_store__keys | posix_adapter__sed --expression '2q;d')"
 then
   dm_store__test__assert_equal "$expected" "$result"
 else
@@ -275,7 +275,7 @@ dm_store__set "$key_2" "$value_2"
 
 expected='2'
 
-if result="$(dm_store__list | dm_tools__wc --lines)"
+if result="$(dm_store__list | posix_adapter__wc --lines)"
 then
   dm_store__test__assert_equal "$expected" "$result"
 else
@@ -288,7 +288,7 @@ dm_store__test__valid_case 'store - entries can be listed 2'
 
 expected="'${key_1}': '${value_1}'"
 
-if result="$(dm_store__list | dm_tools__sed --expression '1q;d')"
+if result="$(dm_store__list | posix_adapter__sed --expression '1q;d')"
 then
   dm_store__test__assert_equal "$expected" "$result"
 else
@@ -301,7 +301,7 @@ dm_store__test__valid_case 'store - entries can be listed 3'
 
 expected="'${key_2}': '${value_2}'"
 
-if result="$(dm_store__list | dm_tools__sed --expression '2q;d')"
+if result="$(dm_store__list | posix_adapter__sed --expression '2q;d')"
 then
   dm_store__test__assert_equal "$expected" "$result"
 else

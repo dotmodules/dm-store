@@ -57,19 +57,19 @@ DM_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX='..'
 # ENTRY POINT
 #==============================================================================
 
-dm_tools__printf '%s' '======================================================='
-dm_tools__printf '%s\n' '============================='
-dm_tools__echo 'COMMON TEST TOOLS VERIFICATIONS'
-dm_tools__printf '%s' '======================================================='
-dm_tools__printf '%s\n' '============================='
+posix_adapter__printf '%s' '======================================================='
+posix_adapter__printf '%s\n' '============================='
+posix_adapter__echo 'COMMON TEST TOOLS VERIFICATIONS'
+posix_adapter__printf '%s' '======================================================='
+posix_adapter__printf '%s\n' '============================='
 
 . ./test__common.sh
 
-dm_tools__printf '%s' '======================================================='
-dm_tools__printf '%s\n' '============================='
-dm_tools__echo 'STORE TEST CASES'
-dm_tools__printf '%s' '======================================================='
-dm_tools__printf '%s\n' '============================='
+posix_adapter__printf '%s' '======================================================='
+posix_adapter__printf '%s\n' '============================='
+posix_adapter__echo 'STORE TEST CASES'
+posix_adapter__printf '%s' '======================================================='
+posix_adapter__printf '%s\n' '============================='
 
 DM_STORE__CONFIG__OPTIONAL__DEBUG_ENABLED='0'
 
@@ -91,5 +91,5 @@ if command -v shellcheck >/dev/null
 then
   run_shellcheck
 else
-  dm_tools__echo "WARNING: shellcheck won't be executed as it cannot be found."
+  posix_adapter__echo "WARNING: shellcheck won't be executed as it cannot be found."
 fi

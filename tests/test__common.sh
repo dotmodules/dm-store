@@ -1,22 +1,22 @@
-dm_tools__printf '%s' "${DIM}"
-dm_tools__printf '%s\n' \
+posix_adapter__printf '%s' "${DIM}"
+posix_adapter__printf '%s\n' \
   'Here we are testing the actual testing tools for both success and failure '
-dm_tools__printf '%s\n' \
+posix_adapter__printf '%s\n' \
   'cases. That means here you will see red error messages but those are only '
-dm_tools__printf '%s\n' \
-  'for validating the testing assertion functions by eye. As dm_tools is a '
-dm_tools__printf '%s\n' \
+posix_adapter__printf '%s\n' \
+  'for validating the testing assertion functions by eye. As posix_adapter is a '
+posix_adapter__printf '%s\n' \
   'fundamental tool for every further dm project, dm_test cannot be used here '
-dm_tools__printf '%s\n' \
-  'because it is based on dm_tools too. So dm_tools has to use a very minimal '
-dm_tools__printf '%s\n' \
+posix_adapter__printf '%s\n' \
+  'because it is based on posix_adapter too. So posix_adapter has to use a very minimal '
+posix_adapter__printf '%s\n' \
   'but also hard coded test suite. This initial tests somewhat make sure that '
-dm_tools__printf '%s' \
+posix_adapter__printf '%s' \
   'this custom test suite is actually working as intended.'
-dm_tools__printf '%s\n' "${RESET}"
+posix_adapter__printf '%s\n' "${RESET}"
 
-dm_tools__printf '%s' '-------------------------------------------------------'
-dm_tools__printf '%s\n' '-----------------------------'
+posix_adapter__printf '%s' '-------------------------------------------------------'
+posix_adapter__printf '%s\n' '-----------------------------'
 
 #==============================================================================
 # ASSERT EQUAL
