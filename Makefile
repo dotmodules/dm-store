@@ -2,7 +2,7 @@
 # MAKE SETTINGS
 
 .DEFAULT_GOAL := help
-NAME := dm.test
+NAME := posix-store
 
 
 #=======================================================================================
@@ -43,7 +43,7 @@ init:
 #=======================================================================================
 .PHONY: install
 install:
-	@ln -sfv $(PWD)/bin/dm-store ~/.local/bin/dm-store
+	@ln -sfv $(PWD)/bin/posix-store ~/.local/bin/posix-store
 
 #=======================================================================================
 # TEST SUITE

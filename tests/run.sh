@@ -47,11 +47,11 @@ fi
 # TEST RUNNER IMPORT
 #==============================================================================
 
-# Relative path from the current path to the dm store repo root.
-DM_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX='..'
+# Relative path from the current path to the posix store repo root.
+POSIX_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX='..'
 
-# shellcheck source=../dm.store.sh
-. "${DM_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX}/dm.store.sh"
+# shellcheck source=../posix_store.sh
+. "${POSIX_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX}/posix_store.sh"
 
 #==============================================================================
 # ENTRY POINT
@@ -71,7 +71,7 @@ posix_adapter__echo 'STORE TEST CASES'
 posix_adapter__printf '%s' '======================================================='
 posix_adapter__printf '%s\n' '============================='
 
-DM_STORE__CONFIG__OPTIONAL__DEBUG_ENABLED='0'
+POSIX_STORE__CONFIG__OPTIONAL__DEBUG_ENABLED='0'
 
 . ./test__store.sh
 
@@ -80,11 +80,11 @@ DM_STORE__CONFIG__OPTIONAL__DEBUG_ENABLED='0'
 #==============================================================================
 
 run_shellcheck() {
-  dm_store__test__log_task 'running shellcheck..'
+  posix_store__test__log_task 'running shellcheck..'
   # Specifying shell type here to be able to omit the shebangs from the
   # modules. More info: https://github.com/koalaman/shellcheck/wiki/SC2148
   shellcheck --shell=sh -x ../src/*.sh ../bin/* ./*.sh
-  dm_store__test__log_success 'shellcheck finished'
+  posix_store__test__log_success 'shellcheck finished'
 }
 
 if command -v shellcheck >/dev/null

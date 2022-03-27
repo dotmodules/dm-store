@@ -44,40 +44,40 @@ fi
 # PRETTY PRINTING
 #==============================================================================
 
-dm_store__test__log_task() {
+posix_store__test__log_task() {
   ___log_message="$1"
   echo "${BOLD}[ ${BLUE}>>${RESET}${BOLD} ]${RESET} ${___log_message}"
 }
 
-dm_store__test__log_success() {
+posix_store__test__log_success() {
   ___log_message="$1"
   echo "${BOLD}[ ${GREEN}OK${RESET}${BOLD} ]${RESET} ${___log_message}"
 }
 
-dm_store__test__log_failure() {
+posix_store__test__log_failure() {
   ___log_message="$1"
   echo "${BOLD}[ ${RED}!!${RESET}${BOLD} ]${RESET} ${___log_message}"
 }
 
-dm_store__test__valid_case() {
+posix_store__test__valid_case() {
   ___title="$1"
   printf '%s' "[ ${BLUE}${DIM}VALID${RESET} ] ${BOLD}${___title}${RESET}"
 }
 
-dm_store__test__error_case() {
+posix_store__test__error_case() {
   ___title="$1"
   printf '%s' "[ ${BLUE}${DIM}ERROR${RESET} ] ${BOLD}${___title}${RESET}"
 }
 
-_dm_store__test__test_case_succeeded() {
+_posix_store__test__test_case_succeeded() {
   printf '%s\n' " - ${BOLD}${GREEN}ok${RESET}"
 }
 
-_dm_store__test__test_case_failed() {
+_posix_store__test__test_case_failed() {
   printf '%s\n' " - ${BOLD}${RED}not ok${RESET}"
 }
 
-dm_store__test__line() {
+posix_store__test__line() {
   printf '%s' "${DIM}"
   printf '%s' '-----------------------------------------------------------------'
   printf '%s' '-------------------'
@@ -88,13 +88,13 @@ dm_store__test__line() {
 # ASSERTIONS
 #==============================================================================
 
-DM_STORE__TEST__SUPPRESS_RESULT_PRINTOUT='0'
+POSIX_STORE__TEST__SUPPRESS_RESULT_PRINTOUT='0'
 
 #==============================================================================
 # Assertion function that compares two values.
 #------------------------------------------------------------------------------
 # Globals:
-#   DM_STORE__TEST__SUPPRESS_RESULT_PRINTOUT
+#   POSIX_STORE__TEST__SUPPRESS_RESULT_PRINTOUT
 #   BOLD
 #   RED
 # Options:
@@ -118,25 +118,25 @@ DM_STORE__TEST__SUPPRESS_RESULT_PRINTOUT='0'
 # Tools:
 #   printf exit
 #==============================================================================
-dm_store__test__assert_equal() {
+posix_store__test__assert_equal() {
   ___expected="$1"
   ___result="$2"
 
   if [ "$___result" = "$___expected" ]
   then
-    if [ "$DM_STORE__TEST__SUPPRESS_RESULT_PRINTOUT" -eq '0' ]
+    if [ "$POSIX_STORE__TEST__SUPPRESS_RESULT_PRINTOUT" -eq '0' ]
     then
-      _dm_store__test__test_case_succeeded
+      _posix_store__test__test_case_succeeded
     fi
 
   else
-    if [ "$DM_STORE__TEST__SUPPRESS_RESULT_PRINTOUT" -eq '0' ]
+    if [ "$POSIX_STORE__TEST__SUPPRESS_RESULT_PRINTOUT" -eq '0' ]
     then
-      _dm_store__test__test_case_failed
+      _posix_store__test__test_case_failed
     fi
 
     printf '%s' "${BOLD}${RED}[ FAILURE ]${RESET}${RED} - "
-    printf '%s' "dm_store__test__assert_equal - "
+    printf '%s' "posix_store__test__assert_equal - "
     printf '%s\n' "${BOLD}Assertion failed!${RESET}"
 
     printf '  %s' "${RED}expected: "
@@ -151,7 +151,7 @@ dm_store__test__assert_equal() {
 
 #==============================================================================
 #
-# dm_store__test__test_case_failed <status>
+# posix_store__test__test_case_failed <status>
 #
 #------------------------------------------------------------------------------
 # Assertion function that should be called when a tested command returns an
@@ -159,7 +159,7 @@ dm_store__test__assert_equal() {
 # terminates the execution.
 #------------------------------------------------------------------------------
 # Globals:
-#   DM_STORE__TEST__SUPPRESS_RESULT_PRINTOUT
+#   POSIX_STORE__TEST__SUPPRESS_RESULT_PRINTOUT
 #   BOLD
 #   RED
 #   RESET
@@ -182,16 +182,16 @@ dm_store__test__assert_equal() {
 # Tools:
 #   printf exit
 #==============================================================================
-dm_store__test__test_case_failed() {
+posix_store__test__test_case_failed() {
   ___status="$1"
 
-  if [ "$DM_STORE__TEST__SUPPRESS_RESULT_PRINTOUT" -eq '0' ]
+  if [ "$POSIX_STORE__TEST__SUPPRESS_RESULT_PRINTOUT" -eq '0' ]
   then
-    _dm_store__test__test_case_failed
+    _posix_store__test__test_case_failed
   fi
 
   printf '%s' "${BOLD}${RED}[ FAILURE ]${RESET}${RED} - "
-  printf '%s' 'dm_store__test__test_case_failed - '
+  printf '%s' 'posix_store__test__test_case_failed - '
   printf '%s\n' "${BOLD}Unexpected status!${RESET}"
 
   printf '%s' "  ${RED}Failed with unexpected non zero status ${BOLD}"
@@ -202,13 +202,13 @@ dm_store__test__test_case_failed() {
 
 #==============================================================================
 #
-# dm_store__test__test_case_passed
+# posix_store__test__test_case_passed
 #
 #------------------------------------------------------------------------------
 # Marks the test case as passed.
 #------------------------------------------------------------------------------
 # Globals:
-#   DM_STORE__TEST__SUPPRESS_RESULT_PRINTOUT
+#   POSIX_STORE__TEST__SUPPRESS_RESULT_PRINTOUT
 # Options:
 #   None
 # Arguments:
@@ -228,9 +228,9 @@ dm_store__test__test_case_failed() {
 # Tools:
 #   printf exit
 #==============================================================================
-dm_store__test__test_case_passed() {
-  if [ "$DM_STORE__TEST__SUPPRESS_RESULT_PRINTOUT" -eq '0' ]
+posix_store__test__test_case_passed() {
+  if [ "$POSIX_STORE__TEST__SUPPRESS_RESULT_PRINTOUT" -eq '0' ]
   then
-    _dm_store__test__test_case_succeeded
+    _posix_store__test__test_case_succeeded
   fi
 }

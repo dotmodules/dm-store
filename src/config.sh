@@ -29,14 +29,15 @@
 #========================|_|===================================================
 # SUBMODULE PATH PREFIX
 #==============================================================================
-# For better readability dm.store.sh is composed from smaller scripts that are
-# sourced into it dynamically. As dm.store.sh is imported to the user codebase
-# by sourcing, the conventional path determination cannot be used. The '$0'
-# variable contains the the host script's path dm.store.sh is sourced from. The
-# relative path from the sourceing code to the root of the dm-store subrepo has
-# to be defined explicitly to the internal sourcing could be executed.
-DM_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX=\
-"${DM_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX:=__INVALID__}"
+# For better readability posix_store.sh is composed from smaller scripts that
+# are sourced into it dynamically. As posix_store.sh is imported to the user
+# codebase by sourcing, the conventional path determination cannot be used. The
+# '$0' variable contains the the host script's path posix_store.sh is sourced
+# from. The relative path from the sourceing code to the root of the
+# posix-store subrepo has to be defined explicitly to the internal sourcing
+# could be executed.
+POSIX_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX=\
+"${POSIX_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX:=__INVALID__}"
 
 #==============================================================================
 #    ____        _   _                   _
@@ -60,14 +61,14 @@ DM_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX=\
 # DEBUG MODE
 #==============================================================================
 # Debug mode enabled or not..
-DM_STORE__CONFIG__OPTIONAL__DEBUG_ENABLED=\
-"${DM_STORE__CONFIG__OPTIONAL__DEBUG_ENABLED:=0}"
+POSIX_STORE__CONFIG__OPTIONAL__DEBUG_ENABLED=\
+"${POSIX_STORE__CONFIG__OPTIONAL__DEBUG_ENABLED:=0}"
 
 #==============================================================================
 # Helper function to check if debugging is enabled or not.
 #------------------------------------------------------------------------------
 # Globals:
-#   DM_STORE__CONFIG__OPTIONAL__DEBUG_ENABLED
+#   POSIX_STORE__CONFIG__OPTIONAL__DEBUG_ENABLED
 # Arguments:
 #   None
 # STDIN:
@@ -83,8 +84,8 @@ DM_STORE__CONFIG__OPTIONAL__DEBUG_ENABLED=\
 #   0 - debug mode is enabled
 #   1 - debug mode is disabled
 #==============================================================================
-dm_store__config__debug_is_enabled() {
-  test "$DM_STORE__CONFIG__OPTIONAL__DEBUG_ENABLED" -ne '0'
+posix_store__config__debug_is_enabled() {
+  test "$POSIX_STORE__CONFIG__OPTIONAL__DEBUG_ENABLED" -ne '0'
 }
 
 #==============================================================================
@@ -104,7 +105,7 @@ dm_store__config__debug_is_enabled() {
 # to ensure that the configuration is complete.
 #------------------------------------------------------------------------------
 # Globals:
-#   DM_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX
+#   POSIX_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX
 # Arguments:
 #   None
 # STDIN:
@@ -119,17 +120,17 @@ dm_store__config__debug_is_enabled() {
 # Status:
 #   0 - Other status is not expected.
 #==============================================================================
-dm_store__config__validate_mandatory_config() {
-  dm_store__debug 'dm_store__config__validate_mandatory_config' \
+posix_store__config__validate_mandatory_config() {
+  posix_store__debug 'posix_store__config__validate_mandatory_config' \
     'validating mandatory configuration variables..'
 
-  if [ "$DM_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX" = '__INVALID__' ]
+  if [ "$POSIX_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX" = '__INVALID__' ]
   then
-    _dm_store__config__report_configuration_error \
-      'DM_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX'
+    _posix_store__config__report_configuration_error \
+      'POSIX_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX'
   fi
 
-  dm_store__debug 'dm_store__config__validate_mandatory_config' \
+  posix_store__debug 'posix_store__config__validate_mandatory_config' \
     'configuration is complete'
 }
 
@@ -153,13 +154,13 @@ dm_store__config__validate_mandatory_config() {
 # Status:
 #   1 - Exiting with error after printed out the issue.
 #==============================================================================
-_dm_store__config__report_configuration_error() {
+_posix_store__config__report_configuration_error() {
   ___variable="$1"
 
-  dm_store__debug '_dm_store__config__report_configuration_error' \
+  posix_store__debug '_posix_store__config__report_configuration_error' \
     'configuration error detected!'
 
-  dm_store__report_error_and_exit \
+  posix_store__report_error_and_exit \
     'Configuration validation failed!' \
     'Mandatory configuration variable was not configured:' \
     "$___variable"

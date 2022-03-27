@@ -1,13 +1,13 @@
 #!/bin/sh
 #==============================================================================
-#       _                     _
-#      | |                   | |
-#    __| |_ __ ___ ______ ___| |_ ___  _ __ ___
-#   / _` | '_ ` _ \______/ __| __/ _ \| '__/ _ \
-#  | (_| | | | | | |     \__ \ || (_) | | |  __/
-#   \__,_|_| |_| |_|     |___/\__\___/|_|  \___|
-#
-#==============================================================================
+#                   _                 _
+#                  (_)               | |
+#   _ __   ___  ___ ___  ________ ___| |_ ___  _ __ ___ 
+#  | '_ \ / _ \/ __| \ \/ /______/ __| __/ _ \| '__/ _ \
+#  | |_) | (_) \__ \ |>  <       \__ \ || (_) | | |  __/
+#  | .__/ \___/|___/_/_/\_\      |___/\__\___/|_|  \___|
+#  | |
+#==|_|=========================================================================
 
 #==============================================================================
 # SANE ENVIRONMENT
@@ -44,31 +44,31 @@ fi
 # LIBRARY SOURCE POINT
 #==============================================================================
 
-# Relative path from the current path to the dm store repo root. Since this
+# Relative path from the current path to the posix store repo root. Since this
 # script is only linked to a directory that is available in the PATH, the
 # execution will happen in place here in the repository bin directory.
-DM_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX='..'
+POSIX_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX='..'
 
-# shellcheck source=../dm.store.sh
-. "${DM_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX}/dm.store.sh"
+# shellcheck source=../posix_store.sh
+. "${POSIX_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX}/posix_store.sh"
 
 #==============================================================================
 # ENVIRONMENT SETUP
 #==============================================================================
 
-DM_STORE__STORE_FILE__NAME='dm-store.store'
+POSIX_STORE__STORE_FILE__NAME='posix_store.store'
 
-if [ -z "${DM_STORE__STORE_FILE__PATH+x}" ]
+if [ -z "${POSIX_STORE__STORE_FILE__PATH+x}" ]
 then
   if [ -z "${XDG_STATE_HOME+x}" ]
   then
-    DM_STORE__STORE_FILE__PATH="${HOME}/.local/state/${DM_STORE__STORE_FILE__NAME}"
+    POSIX_STORE__STORE_FILE__PATH="${HOME}/.local/state/${POSIX_STORE__STORE_FILE__NAME}"
   else
-    DM_STORE__STORE_FILE__PATH="${XDG_STATE_HOME}/${DM_STORE__STORE_FILE__NAME}"
+    POSIX_STORE__STORE_FILE__PATH="${XDG_STATE_HOME}/${POSIX_STORE__STORE_FILE__NAME}"
   fi
 fi
 
-DM_STORE__VERSION="$(posix_adapter__cat '../VERSION')"
+POSIX_STORE__VERSION="$(posix_adapter__cat '../VERSION')"
 
 #==============================================================================
 # COLOR MANAGEMENT
@@ -99,11 +99,11 @@ fi
 # HELP
 #==============================================================================
 
-DM_STORE__HELP="$(cat <<-END
+POSIX_STORE__HELP="$(cat <<-END
 
 ${BOLD}NAME${RESET}
 
-    ${BOLD}dm-store${RESET} - simple key-value store ${DM_STORE__VERSION}
+    ${BOLD}posix-store${RESET} - simple key-value store ${POSIX_STORE__VERSION}
 
     Permanent key-value store  solution with no external dependencies written
     in POSIX compliant shell. Entries will be saved into the store file in an
@@ -112,21 +112,21 @@ ${BOLD}NAME${RESET}
 
 ${BOLD}SYNOPSYS${RESET}
 
-    ${BOLD}dm-store [--debug] set <key> <value>${RESET}
-    ${BOLD}dm-store [--debug] get <key>${RESET}
-    ${BOLD}dm-store [--debug] keys${RESET}
-    ${BOLD}dm-store [--debug] list${RESET}
-    ${BOLD}dm-store [--debug] (delete|del) <key>${RESET}
-    ${BOLD}dm-store [--debug] (clear|reset)${RESET}
-    ${BOLD}dm-store [--help] ${RESET}
+    ${BOLD}posix-store [--debug] set <key> <value>${RESET}
+    ${BOLD}posix-store [--debug] get <key>${RESET}
+    ${BOLD}posix-store [--debug] keys${RESET}
+    ${BOLD}posix-store [--debug] list${RESET}
+    ${BOLD}posix-store [--debug] (delete|del) <key>${RESET}
+    ${BOLD}posix-store [--debug] (clear|reset)${RESET}
+    ${BOLD}posix-store [--help] ${RESET}
 
 ${BOLD}ENVIRONMENT${RESET}
 
-    ${BOLD}DM_STORE__STORE_FILE__PATH${RESET}
+    ${BOLD}POSIX_STORE__STORE_FILE__PATH${RESET}
 
     Location of the store file. If not defined separately, it will default to
-    ${BOLD}\$XDG_STATE_HOME$/${DM_STORE__STORE_FILE__NAME}${RESET} or if ${BOLD}\$XDG_STATE_HOME${RESET} is not set, it will
-    default to ${BOLD}\$HOME/.local/state/${DM_STORE__STORE_FILE__NAME}${RESET}.
+    ${BOLD}\$XDG_STATE_HOME$/${POSIX_STORE__STORE_FILE__NAME}${RESET} or if ${BOLD}\$XDG_STATE_HOME${RESET} is not set, it will
+    default to ${BOLD}\$HOME/.local/state/${POSIX_STORE__STORE_FILE__NAME}${RESET}.
 
 ${BOLD}DESCRIPTION${RESET}
 
@@ -179,7 +179,7 @@ ${BOLD}OPTIONS${RESET}
 
 ${BOLD}AUTHOR${RESET}
 
-    ${BOLD}Tibor Simon${RESET} - while working on the ${BOLD}dotmodules${RESET} project.
+    ${BOLD}Tibor Simon${RESET} - while working on the ${BOLD}posixtools${RESET} project.
 END
 )"
 
@@ -187,18 +187,18 @@ END
 # PARAMETER PARSING
 #==============================================================================
 
-DM_STORE__CONSTANT__MODE__SET='0'
-DM_STORE__CONSTANT__MODE__GET='1'
-DM_STORE__CONSTANT__MODE__KEYS='2'
-DM_STORE__CONSTANT__MODE__LIST='3'
-DM_STORE__CONSTANT__MODE__DELETE='4'
-DM_STORE__CONSTANT__MODE__CLEAR='5'
+POSIX_STORE__CONSTANT__MODE__SET='0'
+POSIX_STORE__CONSTANT__MODE__GET='1'
+POSIX_STORE__CONSTANT__MODE__KEYS='2'
+POSIX_STORE__CONSTANT__MODE__LIST='3'
+POSIX_STORE__CONSTANT__MODE__DELETE='4'
+POSIX_STORE__CONSTANT__MODE__CLEAR='5'
 
-DM_STORE__RUNTIME__MODE='__INVALID__'
-DM_STORE__RUNTIME__KEY='__INVALID__'
-DM_STORE__RUNTIME__VALUE='__INVALID__'
+POSIX_STORE__RUNTIME__MODE='__INVALID__'
+POSIX_STORE__RUNTIME__KEY='__INVALID__'
+POSIX_STORE__RUNTIME__VALUE='__INVALID__'
 
-dm_store__report_invalid_parameters() {
+posix_store__report_invalid_parameters() {
   ___reason="$1"
   ___details="$2"
   echo "${RED}${BOLD}$___reason${RESET}"
@@ -210,19 +210,19 @@ while [ "$#" -gt '0' ]
 do
   case "$1" in
     --help )
-      posix_adapter__echo "$DM_STORE__HELP"
+      posix_adapter__echo "$POSIX_STORE__HELP"
       exit 0
       ;;
     set )
       if [ "$#" -lt '3' ]
       then
-        dm_store__report_invalid_parameters \
+        posix_store__report_invalid_parameters \
           'Insufficient [set] parameter count!' \
           'The [set] operation requires a <key> and <value> parameter.'
       fi
-      DM_STORE__RUNTIME__MODE="$DM_STORE__CONSTANT__MODE__SET"
-      DM_STORE__RUNTIME__KEY="$2"
-      DM_STORE__RUNTIME__VALUE="$3"
+      POSIX_STORE__RUNTIME__MODE="$POSIX_STORE__CONSTANT__MODE__SET"
+      POSIX_STORE__RUNTIME__KEY="$2"
+      POSIX_STORE__RUNTIME__VALUE="$3"
       shift
       shift
       shift
@@ -230,43 +230,43 @@ do
     get )
       if [ "$#" -lt '2' ]
       then
-        dm_store__report_invalid_parameters \
+        posix_store__report_invalid_parameters \
           'Insufficient [get] parameter count!' \
           'The [get] operation requires a <key> parameter.'
       fi
-      DM_STORE__RUNTIME__MODE="$DM_STORE__CONSTANT__MODE__GET"
-      DM_STORE__RUNTIME__KEY="$2"
+      POSIX_STORE__RUNTIME__MODE="$POSIX_STORE__CONSTANT__MODE__GET"
+      POSIX_STORE__RUNTIME__KEY="$2"
       shift
       shift
       ;;
     keys )
-      DM_STORE__RUNTIME__MODE="$DM_STORE__CONSTANT__MODE__KEYS"
+      POSIX_STORE__RUNTIME__MODE="$POSIX_STORE__CONSTANT__MODE__KEYS"
       shift
       ;;
     list )
-      DM_STORE__RUNTIME__MODE="$DM_STORE__CONSTANT__MODE__LIST"
+      POSIX_STORE__RUNTIME__MODE="$POSIX_STORE__CONSTANT__MODE__LIST"
       shift
       ;;
     delete|del )
       if [ "$#" -lt '2' ]
       then
-        dm_store__report_invalid_parameters \
+        posix_store__report_invalid_parameters \
           'Insufficient [delete] parameter count!' \
           'The [delete] operation requires a <key> parameter.'
       fi
-      DM_STORE__RUNTIME__MODE="$DM_STORE__CONSTANT__MODE__DELETE"
-      DM_STORE__RUNTIME__KEY="$2"
+      POSIX_STORE__RUNTIME__MODE="$POSIX_STORE__CONSTANT__MODE__DELETE"
+      POSIX_STORE__RUNTIME__KEY="$2"
       shift
       shift
       ;;
     clear|reset )
-      DM_STORE__RUNTIME__MODE="$DM_STORE__CONSTANT__MODE__CLEAR"
+      POSIX_STORE__RUNTIME__MODE="$POSIX_STORE__CONSTANT__MODE__CLEAR"
       shift
       ;;
     --debug )
       # This debug variable will be used in the store lib.
       # shellcheck disable=SC2034
-      DM_STORE__CONFIG__OPTIONAL__DEBUG_ENABLED='1'
+      POSIX_STORE__CONFIG__OPTIONAL__DEBUG_ENABLED='1'
       shift
       ;;
     --version )
@@ -275,17 +275,17 @@ do
       shift
       ;;
     --[!-]* )
-      dm_store__report_invalid_parameters \
+      posix_store__report_invalid_parameters \
         "Unexpected option '${1}'!" \
         'You can only use the --debug option.'
       ;;
     -[!-]* )
-      dm_store__report_invalid_parameters \
+      posix_store__report_invalid_parameters \
         "Invalid single dashed option '${1}'!" \
-        "dm-store only uses double dashed options like '--option'."
+        "posix-store only uses double dashed options like '--option'."
       ;;
     * )
-      dm_store__report_invalid_parameters \
+      posix_store__report_invalid_parameters \
         'Unexpected parameter!' \
         "Parameter '${1}' is unexpected!"
       ;;
@@ -296,30 +296,30 @@ done
 # ENTRY POINT
 #==============================================================================
 
-dm_store__init "$DM_STORE__STORE_FILE__PATH"
+posix_store__init "$POSIX_STORE__STORE_FILE__PATH"
 
-case "$DM_STORE__RUNTIME__MODE" in
-  "$DM_STORE__CONSTANT__MODE__SET" )
-    dm_store__set "$DM_STORE__RUNTIME__KEY" "$DM_STORE__RUNTIME__VALUE"
+case "$POSIX_STORE__RUNTIME__MODE" in
+  "$POSIX_STORE__CONSTANT__MODE__SET" )
+    posix_store__set "$POSIX_STORE__RUNTIME__KEY" "$POSIX_STORE__RUNTIME__VALUE"
     ;;
-  "$DM_STORE__CONSTANT__MODE__GET" )
-    dm_store__get "$DM_STORE__RUNTIME__KEY"
+  "$POSIX_STORE__CONSTANT__MODE__GET" )
+    posix_store__get "$POSIX_STORE__RUNTIME__KEY"
     ;;
-  "$DM_STORE__CONSTANT__MODE__KEYS" )
-    dm_store__keys
+  "$POSIX_STORE__CONSTANT__MODE__KEYS" )
+    posix_store__keys
     ;;
-  "$DM_STORE__CONSTANT__MODE__LIST" )
-    dm_store__list
+  "$POSIX_STORE__CONSTANT__MODE__LIST" )
+    posix_store__list
     ;;
-  "$DM_STORE__CONSTANT__MODE__DELETE" )
-    dm_store__delete "$DM_STORE__RUNTIME__KEY"
+  "$POSIX_STORE__CONSTANT__MODE__DELETE" )
+    posix_store__delete "$POSIX_STORE__RUNTIME__KEY"
     ;;
-  "$DM_STORE__CONSTANT__MODE__CLEAR" )
+  "$POSIX_STORE__CONSTANT__MODE__CLEAR" )
     posix_adapter__printf '%s' 'Do you really want to clear the store? [y/N] '
     read -r decision
     case $decision in
       y|Y )
-        posix_adapter__rm --force --verbose "$DM_STORE__STORE_FILE__PATH"
+        posix_adapter__rm --force --verbose "$POSIX_STORE__STORE_FILE__PATH"
         posix_adapter__echo 'Store content deleted!'
         ;;
       * )
@@ -327,7 +327,7 @@ case "$DM_STORE__RUNTIME__MODE" in
     esac
     ;;
   * )
-    posix_adapter__echo "$DM_STORE__HELP"
+    posix_adapter__echo "$POSIX_STORE__HELP"
     exit 0
     ;;
 esac

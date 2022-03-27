@@ -48,7 +48,7 @@ set -u  # prevent unset variable expansion
 # Tools:
 #   echo sed
 #==============================================================================
-dm_store__report_error_and_exit() {
+posix_store__report_error_and_exit() {
   ___message="$1"
   ___details="$2"
   ___reason="$3"
@@ -94,15 +94,15 @@ dm_store__report_error_and_exit() {
 # could be executed.
 #==============================================================================
 
-if [ -z ${DM_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX+x} ]
+if [ -z ${POSIX_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX+x} ]
 then
-  dm_store__report_error_and_exit \
+  posix_store__report_error_and_exit \
     'Initialization failed!' \
     'Mandatory path prefix variable is missing!' \
-    'DM_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX'
+    'POSIX_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX'
 fi
 
-___path_prefix="${DM_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX}"
+___path_prefix="${POSIX_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX}"
 
 #==============================================================================
 # POSIX_ADAPTER INTEGRATION
@@ -118,7 +118,7 @@ then
     # shellcheck source=./dependencies/posix_adapter/posix_adapter.sh
     . "${POSIX_ADAPTER__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX}/posix_adapter.sh"
   else
-    dm_store__report_error_and_exit \
+    posix_store__report_error_and_exit \
       'Initialization failed!' \
       'posix_adapter needs to be initialized but its git submodule is missing!' \
       'You need to source it or init its submodule here: git submodule init'
@@ -171,10 +171,10 @@ fi
 # Status:
 #   0 - Other status is not expected.
 #==============================================================================
-dm_store__init() {
+posix_store__init() {
   ___store_file_path="$1"
 
-  dm_store__debug__wrapper '_dm_store__init' "$___store_file_path"
+  posix_store__debug__wrapper '_posix_store__init' "$___store_file_path"
 }
 
 #==============================================================================
@@ -197,11 +197,11 @@ dm_store__init() {
 # Status:
 #   0 - Other status is not expected.
 #==============================================================================
-dm_store__set() {
+posix_store__set() {
   ___key="$1"
   ___value="$2"
 
-  dm_store__debug__wrapper '_dm_store__set' "$___key" "$___value"
+  posix_store__debug__wrapper '_posix_store__set' "$___key" "$___value"
 }
 
 #==============================================================================
@@ -224,10 +224,10 @@ dm_store__set() {
 #   0 - Key exists, value returned.
 #   1 - Key does not exist.
 #==============================================================================
-dm_store__get() {
+posix_store__get() {
   ___key="$1"
 
-  dm_store__debug__wrapper '_dm_store__get' "$___key"
+  posix_store__debug__wrapper '_posix_store__get' "$___key"
 }
 
 #==============================================================================
@@ -249,8 +249,8 @@ dm_store__get() {
 # Status:
 #   0 - Other status is not expected.
 #==============================================================================
-dm_store__keys() {
-  dm_store__debug__wrapper '_dm_store__keys'
+posix_store__keys() {
+  posix_store__debug__wrapper '_posix_store__keys'
 }
 
 #==============================================================================
@@ -272,8 +272,8 @@ dm_store__keys() {
 # Status:
 #   0 - Other status is not expected.
 #==============================================================================
-dm_store__list() {
-  dm_store__debug__wrapper '_dm_store__list'
+posix_store__list() {
+  posix_store__debug__wrapper '_posix_store__list'
 }
 
 #==============================================================================
@@ -296,14 +296,14 @@ dm_store__list() {
 #   0 - Key exists and delete was susseccful.
 #   1 - Key does not exist.
 #==============================================================================
-dm_store__delete() {
+posix_store__delete() {
   ___key="$1"
 
-  dm_store__debug__wrapper '_dm_store__delete' "$___key"
+  posix_store__debug__wrapper '_posix_store__delete' "$___key"
 }
 
 #==============================================================================
 # ENTRY POINT
 #==============================================================================
 
-dm_store__config__validate_mandatory_config
+posix_store__config__validate_mandatory_config

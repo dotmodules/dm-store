@@ -17,10 +17,10 @@
 #==============================================================================
 
 # Separator string between the key and the value.
-DM_STORE__CONSTANT__KEY_VALUE_SEPARATOR=':'
+POSIX_STORE__CONSTANT__KEY_VALUE_SEPARATOR=':'
 
 # Global store system storage file.
-DM_STORE__RUNTIME__STORAGE_FILE='__INVALID__'
+POSIX_STORE__RUNTIME__STORAGE_FILE='__INVALID__'
 
 #==============================================================================
 #     _    ____ ___    __                  _   _
@@ -37,14 +37,14 @@ DM_STORE__RUNTIME__STORAGE_FILE='__INVALID__'
 # store file.
 #------------------------------------------------------------------------------
 # Globals:
-#   DM_STORE__RUNTIME__STORAGE_FILE
+#   POSIX_STORE__RUNTIME__STORAGE_FILE
 # Arguments:
 #   [1] store_file_path - Path to the store file.
 # STDIN:
 #   None
 #------------------------------------------------------------------------------
 # Output variables:
-#   DM_STORE__RUNTIME__STORAGE_FILE
+#   POSIX_STORE__RUNTIME__STORAGE_FILE
 # STDOUT:
 #   None
 # STDERR:
@@ -52,24 +52,24 @@ DM_STORE__RUNTIME__STORAGE_FILE='__INVALID__'
 # Status:
 #   0 - Other status is not expected.
 #==============================================================================
-_dm_store__init() {
+_posix_store__init() {
   ___store_file_path="$1"
 
-  dm_store__debug '_dm_store__init' \
+  posix_store__debug '_posix_store__init' \
     'initializing store system..'
 
-  DM_STORE__RUNTIME__STORAGE_FILE="$___store_file_path"
+  POSIX_STORE__RUNTIME__STORAGE_FILE="$___store_file_path"
 
-  if [ ! -f "$DM_STORE__RUNTIME__STORAGE_FILE" ]
+  if [ ! -f "$POSIX_STORE__RUNTIME__STORAGE_FILE" ]
   then
-    ___dir="$(posix_adapter__dirname "$DM_STORE__RUNTIME__STORAGE_FILE")"
+    ___dir="$(posix_adapter__dirname "$POSIX_STORE__RUNTIME__STORAGE_FILE")"
     posix_adapter__mkdir --parents "$___dir"
-    posix_adapter__touch "$DM_STORE__RUNTIME__STORAGE_FILE"
+    posix_adapter__touch "$POSIX_STORE__RUNTIME__STORAGE_FILE"
   fi
 
-  dm_store__debug_list '_dm_store__init' \
+  posix_store__debug_list '_posix_store__init' \
     "store system initialized with storage file path:" \
-    "$DM_STORE__RUNTIME__STORAGE_FILE"
+    "$POSIX_STORE__RUNTIME__STORAGE_FILE"
 }
 
 #==============================================================================
@@ -92,32 +92,32 @@ _dm_store__init() {
 # Status:
 #   0 - Other status is not expected.
 #==============================================================================
-_dm_store__set() {
+_posix_store__set() {
   ___key="$1"
   ___value="$2"
 
-  dm_store__debug_list '_dm_store__set' \
+  posix_store__debug_list '_posix_store__set' \
     "storing value for key '${___key}':" "$___value"
 
-  dm_store__debug '_dm_store__set' 'encoding values..'
+  posix_store__debug '_posix_store__set' 'encoding values..'
 
-  ___encoded_key="$(_dm_store__encode "$___key")"
-  ___encoded_value="$(_dm_store__encode "$___value")"
+  ___encoded_key="$(_posix_store__encode "$___key")"
+  ___encoded_value="$(_posix_store__encode "$___value")"
 
-  dm_store__debug '_dm_store__set' 'storing values..'
+  posix_store__debug '_posix_store__set' 'storing values..'
 
-  _dm_store__log_store_content 'store content before insertion'
+  _posix_store__log_store_content 'store content before insertion'
 
-  if _dm_store__key_exists "$___encoded_key"
+  if _posix_store__key_exists "$___encoded_key"
   then
-    _dm_store__replace "$___encoded_key" "$___encoded_value"
+    _posix_store__replace "$___encoded_key" "$___encoded_value"
   else
-    _dm_store__insert "$___encoded_key" "$___encoded_value"
+    _posix_store__insert "$___encoded_key" "$___encoded_value"
   fi
 
-  _dm_store__log_store_content 'store content after insertion'
+  _posix_store__log_store_content 'store content after insertion'
 
-  dm_store__debug '_dm_store__set' 'set finished'
+  posix_store__debug '_posix_store__set' 'set finished'
 }
 
 #==============================================================================
@@ -140,21 +140,21 @@ _dm_store__set() {
 #   0 - Key exists, value returned.
 #   1 - Key does not exist.
 #==============================================================================
-_dm_store__get() {
+_posix_store__get() {
   ___key="$1"
 
-  dm_store__debug '_dm_store__get' "reading value for key '${___key}'"
+  posix_store__debug '_posix_store__get' "reading value for key '${___key}'"
 
-  ___encoded_key="$(_dm_store__encode "$___key")"
+  ___encoded_key="$(_posix_store__encode "$___key")"
 
-  if ___encoded_value="$(_dm_store__get_value_for_key "$___encoded_key")"
+  if ___encoded_value="$(_posix_store__get_value_for_key "$___encoded_key")"
   then
-    ___value="$(_dm_store__decode "$___encoded_value")"
+    ___value="$(_posix_store__decode "$___encoded_value")"
     posix_adapter__echo "$___value"
-    dm_store__debug '_dm_store__get' 'get finished'
+    posix_store__debug '_posix_store__get' 'get finished'
     return 0
   else
-    dm_store__debug '_dm_store__get' 'get finished'
+    posix_store__debug '_posix_store__get' 'get finished'
     return 1
   fi
 }
@@ -163,7 +163,7 @@ _dm_store__get() {
 # Decode and list all keys in the store.
 #------------------------------------------------------------------------------
 # Globals:
-#   DM_STORE__RUNTIME__STORAGE_FILE
+#   POSIX_STORE__RUNTIME__STORAGE_FILE
 # Arguments:
 #   None
 # STDIN:
@@ -179,33 +179,33 @@ _dm_store__get() {
 #   0 - Keys are listed.
 #   1 - Store is empty.
 #==============================================================================
-_dm_store__keys() {
-  ___store_file="$DM_STORE__RUNTIME__STORAGE_FILE"
+_posix_store__keys() {
+  ___store_file="$POSIX_STORE__RUNTIME__STORAGE_FILE"
 
-  dm_store__debug '_dm_store__keys' \
+  posix_store__debug '_posix_store__keys' \
     'listing and decoding the keys in the store'
 
   if [ -s "$___store_file" ]
   then
     while read -r ___entry; do
-      dm_store__debug '_dm_store__keys' 'separating key from entry..'
+      posix_store__debug '_posix_store__keys' 'separating key from entry..'
 
-      ___encoded_key="$(_dm_store__get_key_from_entry "$___entry")"
+      ___encoded_key="$(_posix_store__get_key_from_entry "$___entry")"
 
-      dm_store__debug '_dm_store__keys' 'decoding key..'
+      posix_store__debug '_posix_store__keys' 'decoding key..'
 
-      ___key="$(_dm_store__decode "$___encoded_key")"
+      ___key="$(_posix_store__decode "$___encoded_key")"
 
-      dm_store__debug '_dm_store__keys' 'displaying key..'
+      posix_store__debug '_posix_store__keys' 'displaying key..'
 
       posix_adapter__echo "$___key"
 
     done <"$___store_file"
 
-    dm_store__debug '_dm_store__keys' 'listing finished'
+    posix_store__debug '_posix_store__keys' 'listing finished'
 
   else
-    dm_store__debug '_dm_store__keys' 'store file is empty'
+    posix_store__debug '_posix_store__keys' 'store file is empty'
     return 1
   fi
 }
@@ -214,7 +214,7 @@ _dm_store__keys() {
 # Decode and list the store file content.
 #------------------------------------------------------------------------------
 # Globals:
-#   DM_STORE__RUNTIME__STORAGE_FILE
+#   POSIX_STORE__RUNTIME__STORAGE_FILE
 # Arguments:
 #   None
 # STDIN:
@@ -230,33 +230,33 @@ _dm_store__keys() {
 #   0 - Store content is listed.
 #   1 - Store is empty.
 #==============================================================================
-_dm_store__list() {
-  ___store_file="$DM_STORE__RUNTIME__STORAGE_FILE"
+_posix_store__list() {
+  ___store_file="$POSIX_STORE__RUNTIME__STORAGE_FILE"
 
-  dm_store__debug '_dm_store__list' \
+  posix_store__debug '_posix_store__list' \
     'listing and decoding the content of the store line-by-line'
 
   if [ -s "$___store_file" ]
   then
     while read -r ___entry; do
 
-      dm_store__debug '_dm_store__list' 'getting fields from entry..'
-      ___encoded_key="$(_dm_store__get_key_from_entry "$___entry")"
-      ___encoded_value="$(_dm_store__get_value_from_entry "$___entry")"
+      posix_store__debug '_posix_store__list' 'getting fields from entry..'
+      ___encoded_key="$(_posix_store__get_key_from_entry "$___entry")"
+      ___encoded_value="$(_posix_store__get_value_from_entry "$___entry")"
 
-      dm_store__debug '_dm_store__list' 'decoding fields..'
-      ___key="$(_dm_store__decode "$___encoded_key")"
-      ___value="$(_dm_store__decode "$___encoded_value")"
+      posix_store__debug '_posix_store__list' 'decoding fields..'
+      ___key="$(_posix_store__decode "$___encoded_key")"
+      ___value="$(_posix_store__decode "$___encoded_value")"
 
-      dm_store__debug '_dm_store__list' 'displaying fields..'
+      posix_store__debug '_posix_store__list' 'displaying fields..'
       posix_adapter__echo "'${___key}': '${___value}'"
 
     done <"$___store_file"
 
-    dm_store__debug '_dm_store__list' 'listing finished'
+    posix_store__debug '_posix_store__list' 'listing finished'
 
   else
-    dm_store__debug '_dm_store__list' 'store file is empty'
+    posix_store__debug '_posix_store__list' 'store file is empty'
     return 1
   fi
 }
@@ -281,18 +281,18 @@ _dm_store__list() {
 #   0 - Key exists, deletion completed.
 #   1 - Key does not exist.
 #==============================================================================
-_dm_store__delete() {
+_posix_store__delete() {
   ___key="$1"
 
-  dm_store__debug 'dm_store__delete' "reading value for key '${___key}'"
+  posix_store__debug 'posix_store__delete' "reading value for key '${___key}'"
 
-  _dm_store__log_store_content 'store content before deletion'
+  _posix_store__log_store_content 'store content before deletion'
 
-  ___encoded_key="$(_dm_store__encode "$___key")"
+  ___encoded_key="$(_posix_store__encode "$___key")"
 
-  _dm_store__delete_key "$___encoded_key"
+  _posix_store__delete_key "$___encoded_key"
 
-  _dm_store__log_store_content 'store content after deletion'
+  _posix_store__log_store_content 'store content after deletion'
 }
 
 #==============================================================================
@@ -309,7 +309,7 @@ _dm_store__delete() {
 # Logs out the content of the store file if debug is enabled.
 #------------------------------------------------------------------------------
 # Globals:
-#   DM_STORE__RUNTIME__STORAGE_FILE
+#   POSIX_STORE__RUNTIME__STORAGE_FILE
 # Arguments:
 #   [1] message - Debug message that should be used for the log message.
 # STDIN:
@@ -324,19 +324,19 @@ _dm_store__delete() {
 # Status:
 #   0 - Other status is not expected.
 #==============================================================================
-_dm_store__log_store_content() {
+_posix_store__log_store_content() {
   ___message="$1"
-  ___store_file="$DM_STORE__RUNTIME__STORAGE_FILE"
+  ___store_file="$POSIX_STORE__RUNTIME__STORAGE_FILE"
 
-  if dm_store__config__debug_is_enabled
+  if posix_store__config__debug_is_enabled
   then
     if [ -s "$___store_file" ]
     then
-      dm_store__debug_list '_dm_store__log_store_content' \
+      posix_store__debug_list '_posix_store__log_store_content' \
         "$___message" \
         "$(posix_adapter__cat "$___store_file")"
     else
-      dm_store__debug '_dm_store__log_store_content' 'store file is empty'
+      posix_store__debug '_posix_store__log_store_content' 'store file is empty'
     fi
   fi
 }
@@ -361,13 +361,13 @@ _dm_store__log_store_content() {
 #   0 - Separation completed.
 #   1 - Error during separation.
 #==============================================================================
-_dm_store__get_key_from_entry() {
+_posix_store__get_key_from_entry() {
   ___entry="$1"
 
-  dm_store__debug '_dm_store__get_key_from_entry' \
+  posix_store__debug '_posix_store__get_key_from_entry' \
     'getting key from entry..' \
 
-  _dm_store__get_field_from_entry "$___entry" '1'
+  _posix_store__get_field_from_entry "$___entry" '1'
 }
 
 #==============================================================================
@@ -390,20 +390,20 @@ _dm_store__get_key_from_entry() {
 #   0 - Separation completed.
 #   1 - Error during separation.
 #==============================================================================
-_dm_store__get_value_from_entry() {
+_posix_store__get_value_from_entry() {
   ___entry="$1"
 
-  dm_store__debug '_dm_store__get_value_from_entry' \
+  posix_store__debug '_posix_store__get_value_from_entry' \
     'getting value from entry..' \
 
-  _dm_store__get_field_from_entry "$___entry" '2'
+  _posix_store__get_field_from_entry "$___entry" '2'
 }
 
 #==============================================================================
 # Separates the given field from the given store entry.
 #------------------------------------------------------------------------------
 # Globals:
-#   DM_STORE__CONSTANT__KEY_VALUE_SEPARATOR
+#   POSIX_STORE__CONSTANT__KEY_VALUE_SEPARATOR
 # Arguments:
 #   [1] entry - Entry from the store file.
 #   [2] field_index - Field index starting from one.
@@ -420,13 +420,13 @@ _dm_store__get_value_from_entry() {
 #   0 - Separation completed.
 #   1 - Error during separation.
 #==============================================================================
-_dm_store__get_field_from_entry() {
+_posix_store__get_field_from_entry() {
   ___entry="$1"
   ___field_index="$2"
 
-  ___separator="$DM_STORE__CONSTANT__KEY_VALUE_SEPARATOR"
+  ___separator="$POSIX_STORE__CONSTANT__KEY_VALUE_SEPARATOR"
 
-  dm_store__debug_list '_dm_store__get_field_from_entry' \
+  posix_store__debug_list '_posix_store__get_field_from_entry' \
     "getting field '${___field_index}' from entry" \
     "$___entry"
 
@@ -435,11 +435,11 @@ _dm_store__get_field_from_entry() {
     posix_adapter__cut --delimiter "$___separator" --fields "$___field_index" \
   )"
   then
-    dm_store__debug '_dm_store__get_field_from_entry' \
+    posix_store__debug '_posix_store__get_field_from_entry' \
       "field separated: '${___field}'"
     posix_adapter__echo "$___field"
   else
-    dm_store__debug '_dm_store__get_field_from_entry' \
+    posix_store__debug '_posix_store__get_field_from_entry' \
       'error during field separation..'
     return 1
   fi
@@ -449,8 +449,8 @@ _dm_store__get_field_from_entry() {
 # Checks if the given key exists in the storage file.
 #------------------------------------------------------------------------------
 # Globals:
-#   DM_STORE__CONSTANT__KEY_VALUE_SEPARATOR
-#   DM_STORE__RUNTIME__STORAGE_FILE
+#   POSIX_STORE__CONSTANT__KEY_VALUE_SEPARATOR
+#   POSIX_STORE__RUNTIME__STORAGE_FILE
 # Arguments:
 #   [1] key - The key that has to be checked.
 # STDIN:
@@ -466,20 +466,20 @@ _dm_store__get_field_from_entry() {
 #   0 - Key found.
 #   1 - Key not fount.
 #==============================================================================
-_dm_store__key_exists() {
+_posix_store__key_exists() {
   ___key="$1"
 
-  ___separator="$DM_STORE__CONSTANT__KEY_VALUE_SEPARATOR"
-  ___store_file="$DM_STORE__RUNTIME__STORAGE_FILE"
+  ___separator="$POSIX_STORE__CONSTANT__KEY_VALUE_SEPARATOR"
+  ___store_file="$POSIX_STORE__RUNTIME__STORAGE_FILE"
 
   ___pattern="^${___key}${___separator}"
 
   if posix_adapter__grep --silent "$___pattern" "$___store_file"
   then
-    dm_store__debug '_dm_store__key_exists' 'key found in the store'
+    posix_store__debug '_posix_store__key_exists' 'key found in the store'
     return 0
   else
-    dm_store__debug '_dm_store__key_exists' \
+    posix_store__debug '_posix_store__key_exists' \
       'key does not exist in the store'
     return 1
   fi
@@ -489,8 +489,8 @@ _dm_store__key_exists() {
 # Gets the value from the store for a key is exists.
 #------------------------------------------------------------------------------
 # Globals:
-#   DM_STORE__CONSTANT__KEY_VALUE_SEPARATOR
-#   DM_STORE__RUNTIME__STORAGE_FILE
+#   POSIX_STORE__CONSTANT__KEY_VALUE_SEPARATOR
+#   POSIX_STORE__RUNTIME__STORAGE_FILE
 # Arguments:
 #   [1] key - The key for the value that should be returned.
 # STDIN:
@@ -507,24 +507,24 @@ _dm_store__key_exists() {
 #   1 - Key not fount.
 #   2 - Unexpected error, it should be reported..
 #==============================================================================
-_dm_store__get_value_for_key() {
+_posix_store__get_value_for_key() {
   ___key="$1"
 
-  ___separator="$DM_STORE__CONSTANT__KEY_VALUE_SEPARATOR"
-  ___store_file="$DM_STORE__RUNTIME__STORAGE_FILE"
+  ___separator="$POSIX_STORE__CONSTANT__KEY_VALUE_SEPARATOR"
+  ___store_file="$POSIX_STORE__RUNTIME__STORAGE_FILE"
 
   ___search_pattern="^${___key}${___separator}"
 
   if ___result="$(posix_adapter__grep "$___search_pattern" "$___store_file")"
   then
-    dm_store__debug_list '_dm_store__get_value_for_key' \
+    posix_store__debug_list '_posix_store__get_value_for_key' \
       'key found in the store:' "$___result"
 
     # This is a very unlikely case, but should be prepared for it..
     ___line_count="$(posix_adapter__echo "$___result" | posix_adapter__wc --lines)"
     if [ "$___line_count" -ne '1' ]
     then
-      dm_store__debug_list '_dm_store__store__get_value_for_key' \
+      posix_store__debug_list '_posix_store__store__get_value_for_key' \
         'unexpected error! more then one matching line found' \
         "$___result"
       return 2
@@ -539,14 +539,14 @@ _dm_store__get_value_for_key() {
       posix_adapter__sed --expression "s/${___search_pattern}//" \
     )"
 
-    dm_store__debug_list '_dm_store__get_value_for_key' \
+    posix_store__debug_list '_posix_store__get_value_for_key' \
       'value separated:' "$___value"
 
     posix_adapter__echo "$___value"
     return 0
 
   else
-    dm_store__debug '_dm_store__get_value_for_key' \
+    posix_store__debug '_posix_store__get_value_for_key' \
       'key does not exist in the store, returning (1)..'
     return 1
   fi
@@ -557,8 +557,8 @@ _dm_store__get_value_for_key() {
 # file.
 #------------------------------------------------------------------------------
 # Globals:
-#   DM_STORE__CONSTANT__KEY_VALUE_SEPARATOR
-#   DM_STORE__RUNTIME__STORAGE_FILE
+#   POSIX_STORE__CONSTANT__KEY_VALUE_SEPARATOR
+#   POSIX_STORE__RUNTIME__STORAGE_FILE
 # Arguments:
 #   [1] key - Key for the given value to be stored in.
 #   [2] value - Value that needs to be stored for the given key.
@@ -574,20 +574,20 @@ _dm_store__get_value_for_key() {
 # Status:
 #   0 - Other status is not expected.
 #==============================================================================
-_dm_store__insert() {
+_posix_store__insert() {
   ___key="$1"
   ___value="$2"
 
-  ___separator="$DM_STORE__CONSTANT__KEY_VALUE_SEPARATOR"
-  ___store_file="$DM_STORE__RUNTIME__STORAGE_FILE"
+  ___separator="$POSIX_STORE__CONSTANT__KEY_VALUE_SEPARATOR"
+  ___store_file="$POSIX_STORE__RUNTIME__STORAGE_FILE"
 
-  dm_store__debug '_dm_store__insert' \
+  posix_store__debug '_posix_store__insert' \
     'inserting key-value pair to the store file..'
 
   ___line="${___key}${___separator}${___value}"
   posix_adapter__echo "$___line" >> "$___store_file"
 
-  dm_store__debug '_dm_store__insert' \
+  posix_store__debug '_posix_store__insert' \
     'key-value pair has been inserted to the store file'
 }
 
@@ -595,8 +595,8 @@ _dm_store__insert() {
 # Replaces an existing key with new a key-value pair to the store.
 #------------------------------------------------------------------------------
 # Globals:
-#   DM_STORE__CONSTANT__KEY_VALUE_SEPARATOR
-#   DM_STORE__RUNTIME__STORAGE_FILE
+#   POSIX_STORE__CONSTANT__KEY_VALUE_SEPARATOR
+#   POSIX_STORE__RUNTIME__STORAGE_FILE
 # Arguments:
 #   [1] key - Key for the given value to be stored in.
 #   [2] value - Value that needs to be stored for the given key.
@@ -612,14 +612,14 @@ _dm_store__insert() {
 # Status:
 #   0 - Other status is not expected.
 #==============================================================================
-_dm_store__replace() {
+_posix_store__replace() {
   ___key="$1"
   ___value="$2"
 
-  ___separator="$DM_STORE__CONSTANT__KEY_VALUE_SEPARATOR"
-  ___store_file="$DM_STORE__RUNTIME__STORAGE_FILE"
+  ___separator="$POSIX_STORE__CONSTANT__KEY_VALUE_SEPARATOR"
+  ___store_file="$POSIX_STORE__RUNTIME__STORAGE_FILE"
 
-  dm_store__debug '_dm_store__replace' \
+  posix_store__debug '_posix_store__replace' \
     'replacing existing key with new value..'
 
   ___pattern="^${___key}${___separator}.*"
@@ -630,15 +630,15 @@ _dm_store__replace() {
     --expression "s/${___pattern}/${___new}/" \
     "$___store_file"
 
-  dm_store__debug '_dm_store__replace' 'value has been replaced'
+  posix_store__debug '_posix_store__replace' 'value has been replaced'
 }
 
 #==============================================================================
 # Deletes an entry that matches for the given key.
 #------------------------------------------------------------------------------
 # Globals:
-#   DM_STORE__CONSTANT__KEY_VALUE_SEPARATOR
-#   DM_STORE__RUNTIME__STORAGE_FILE
+#   POSIX_STORE__CONSTANT__KEY_VALUE_SEPARATOR
+#   POSIX_STORE__RUNTIME__STORAGE_FILE
 # Arguments:
 #   [1] key - Key for the entry to be deleted.
 # STDIN:
@@ -654,25 +654,25 @@ _dm_store__replace() {
 #   0 - Other status is not expected.
 #   1 - Key does not exist.
 #==============================================================================
-_dm_store__delete_key() {
+_posix_store__delete_key() {
   ___key="$1"
 
-  ___separator="$DM_STORE__CONSTANT__KEY_VALUE_SEPARATOR"
-  ___store_file="$DM_STORE__RUNTIME__STORAGE_FILE"
+  ___separator="$POSIX_STORE__CONSTANT__KEY_VALUE_SEPARATOR"
+  ___store_file="$POSIX_STORE__RUNTIME__STORAGE_FILE"
 
-  dm_store__debug '_dm_store__delete_key' \
+  posix_store__debug '_posix_store__delete_key' \
     "deleting key '${___key}'.."
 
-  if _dm_store__key_exists "$___key"
+  if _posix_store__key_exists "$___key"
   then
     ___pattern="^${___key}${___separator}.*"
     posix_adapter__sed \
       --in-place '' \
       --expression "/${___pattern}/d" \
       "$___store_file"
-    dm_store__debug '_dm_store__delete_key' 'key deleted'
+    posix_store__debug '_posix_store__delete_key' 'key deleted'
   else
-    dm_store__debug '_dm_store__delete_key' 'key does not exist!'
+    posix_store__debug '_posix_store__delete_key' 'key does not exist!'
     return 1
   fi
 }
@@ -699,10 +699,10 @@ _dm_store__delete_key() {
 # Status:
 #   0 - Other status is not expected.
 #==============================================================================
-_dm_store__encode() {
+_posix_store__encode() {
   ___value="$1"
 
-  dm_store__debug_list '_dm_store__encode' \
+  posix_store__debug_list '_posix_store__encode' \
     'encoding value:' "$___value"
 
   ___encoded="$( \
@@ -711,7 +711,7 @@ _dm_store__encode() {
     posix_adapter__tr --delete '\n' \
   )"
 
-  dm_store__debug_list '_dm_store__encode' \
+  posix_store__debug_list '_posix_store__encode' \
     'value encoded:' "$___encoded"
 
   posix_adapter__echo "$___encoded"
@@ -737,10 +737,10 @@ _dm_store__encode() {
 # Status:
 #   0 - Other status is not expected.
 #==============================================================================
-_dm_store__decode() {
+_posix_store__decode() {
   ___encoded_value="$1"
 
-  dm_store__debug_list '_dm_store__decode' \
+  posix_store__debug_list '_posix_store__decode' \
     'decoding value:' "$___encoded_value"
 
   ___value="$( \
@@ -748,7 +748,7 @@ _dm_store__decode() {
     posix_adapter__xxd --revert --plain \
   )"
 
-  dm_store__debug_list '_dm_store__decode' \
+  posix_store__debug_list '_posix_store__decode' \
     'value decoded:' "$___value"
 
   posix_adapter__echo "$___value"
