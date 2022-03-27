@@ -68,7 +68,7 @@ then
   fi
 fi
 
-DM_STORE__VERSION="$(dm_tools__cat '../VERSION')"
+DM_STORE__VERSION="$(posix_adapter__cat '../VERSION')"
 
 #==============================================================================
 # COLOR MANAGEMENT
@@ -77,13 +77,13 @@ DM_STORE__VERSION="$(dm_tools__cat '../VERSION')"
 # Checking the availibility and usability of tput. If it is available and
 # usable we can set the global coloring variables with it by expecting a
 # possibly missing color/modifier.
-if dm_tools__tput__is_available
+if posix_adapter__tput__is_available
 then
-  RED="$(dm_tools__tput setaf 1)"
-  BLUE="$(dm_tools__tput setaf 4)"
-  RESET="$(dm_tools__tput sgr0)"
-  BOLD="$(dm_tools__tput bold)"
-  DIM="$(dm_tools__tput dim)"
+  RED="$(posix_adapter__tput setaf 1)"
+  BLUE="$(posix_adapter__tput setaf 4)"
+  RESET="$(posix_adapter__tput sgr0)"
+  BOLD="$(posix_adapter__tput bold)"
+  DIM="$(posix_adapter__tput dim)"
 else
   RED=''
   # Used internally by the library.
@@ -210,7 +210,7 @@ while [ "$#" -gt '0' ]
 do
   case "$1" in
     --help )
-      dm_tools__echo "$DM_STORE__HELP"
+      posix_adapter__echo "$DM_STORE__HELP"
       exit 0
       ;;
     set )
@@ -270,7 +270,7 @@ do
       shift
       ;;
     --version )
-      dm_tools__cat '../VERSION'
+      posix_adapter__cat '../VERSION'
       exit 0
       shift
       ;;
@@ -315,19 +315,19 @@ case "$DM_STORE__RUNTIME__MODE" in
     dm_store__delete "$DM_STORE__RUNTIME__KEY"
     ;;
   "$DM_STORE__CONSTANT__MODE__CLEAR" )
-    dm_tools__printf '%s' 'Do you really want to clear the store? [y/N] '
+    posix_adapter__printf '%s' 'Do you really want to clear the store? [y/N] '
     read -r decision
     case $decision in
       y|Y )
-        dm_tools__rm --force --verbose "$DM_STORE__STORE_FILE__PATH"
-        dm_tools__echo 'Store content deleted!'
+        posix_adapter__rm --force --verbose "$DM_STORE__STORE_FILE__PATH"
+        posix_adapter__echo 'Store content deleted!'
         ;;
       * )
         ;;
     esac
     ;;
   * )
-    dm_tools__echo "$DM_STORE__HELP"
+    posix_adapter__echo "$DM_STORE__HELP"
     exit 0
     ;;
 esac
