@@ -57,19 +57,19 @@ POSIX_STORE__CONFIG__MANDATORY__SUBMODULE_PATH_PREFIX='..'
 # ENTRY POINT
 #==============================================================================
 
-posix_adapter__printf '%s' '======================================================='
-posix_adapter__printf '%s\n' '============================='
-posix_adapter__echo 'COMMON TEST TOOLS VERIFICATIONS'
-posix_adapter__printf '%s' '======================================================='
-posix_adapter__printf '%s\n' '============================='
+printf '%s' '======================================================='
+printf '%s\n' '============================='
+echo 'COMMON TEST TOOLS VERIFICATIONS'
+printf '%s' '======================================================='
+printf '%s\n' '============================='
 
 . ./test__common.sh
 
-posix_adapter__printf '%s' '======================================================='
-posix_adapter__printf '%s\n' '============================='
-posix_adapter__echo 'STORE TEST CASES'
-posix_adapter__printf '%s' '======================================================='
-posix_adapter__printf '%s\n' '============================='
+printf '%s' '======================================================='
+printf '%s\n' '============================='
+echo 'STORE TEST CASES'
+printf '%s' '======================================================='
+printf '%s\n' '============================='
 
 POSIX_STORE__CONFIG__OPTIONAL__DEBUG_ENABLED='0'
 
@@ -91,5 +91,5 @@ if command -v shellcheck >/dev/null
 then
   run_shellcheck
 else
-  posix_adapter__echo "WARNING: shellcheck won't be executed as it cannot be found."
+  echo "WARNING: shellcheck won't be executed as it cannot be found."
 fi

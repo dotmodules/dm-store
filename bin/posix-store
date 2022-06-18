@@ -210,7 +210,7 @@ while [ "$#" -gt '0' ]
 do
   case "$1" in
     --help )
-      posix_adapter__echo "$POSIX_STORE__HELP"
+      echo "$POSIX_STORE__HELP"
       exit 0
       ;;
     set )
@@ -315,19 +315,19 @@ case "$POSIX_STORE__RUNTIME__MODE" in
     posix_store__delete "$POSIX_STORE__RUNTIME__KEY"
     ;;
   "$POSIX_STORE__CONSTANT__MODE__CLEAR" )
-    posix_adapter__printf '%s' 'Do you really want to clear the store? [y/N] '
+    printf '%s' 'Do you really want to clear the store? [y/N] '
     read -r decision
     case $decision in
       y|Y )
         posix_adapter__rm --force --verbose "$POSIX_STORE__STORE_FILE__PATH"
-        posix_adapter__echo 'Store content deleted!'
+        echo 'Store content deleted!'
         ;;
       * )
         ;;
     esac
     ;;
   * )
-    posix_adapter__echo "$POSIX_STORE__HELP"
+    echo "$POSIX_STORE__HELP"
     exit 0
     ;;
 esac

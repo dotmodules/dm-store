@@ -115,8 +115,8 @@ key="key"
 value_1='line 1'
 value_2='line 2'
 value="$( \
-  posix_adapter__echo "$value_1"; \
-  posix_adapter__echo "$value_2"; \
+  echo "$value_1"; \
+  echo "$value_2"; \
 )"
 
 posix_store__init "$TEMP_STORE_FILE_PATH"
@@ -162,14 +162,14 @@ posix_store__test__valid_case 'store - even multiline keys can be used 1'
 rm -f "$TEMP_STORE_FILE_PATH"
 
 key="$( \
-  posix_adapter__echo 'key line 1'; \
-  posix_adapter__echo 'key line 2'; \
+  echo 'key line 1'; \
+  echo 'key line 2'; \
 )"
 value_1='line 1'
 value_2='line 2'
 value="$( \
-  posix_adapter__echo "$value_1"; \
-  posix_adapter__echo "$value_2"; \
+  echo "$value_1"; \
+  echo "$value_2"; \
 )"
 
 posix_store__init "$TEMP_STORE_FILE_PATH"

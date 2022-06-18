@@ -150,7 +150,7 @@ _posix_store__get() {
   if ___encoded_value="$(_posix_store__get_value_for_key "$___encoded_key")"
   then
     ___value="$(_posix_store__decode "$___encoded_value")"
-    posix_adapter__echo "$___value"
+    echo "$___value"
     posix_store__debug '_posix_store__get' 'get finished'
     return 0
   else
@@ -198,7 +198,7 @@ _posix_store__keys() {
 
       posix_store__debug '_posix_store__keys' 'displaying key..'
 
-      posix_adapter__echo "$___key"
+      echo "$___key"
 
     done <"$___store_file"
 
@@ -249,7 +249,7 @@ _posix_store__list() {
       ___value="$(_posix_store__decode "$___encoded_value")"
 
       posix_store__debug '_posix_store__list' 'displaying fields..'
-      posix_adapter__echo "'${___key}': '${___value}'"
+      echo "'${___key}': '${___value}'"
 
     done <"$___store_file"
 
@@ -431,13 +431,13 @@ _posix_store__get_field_from_entry() {
     "$___entry"
 
   if ___field="$( \
-    posix_adapter__echo "$___entry" | \
+    echo "$___entry" | \
     posix_adapter__cut --delimiter "$___separator" --fields "$___field_index" \
   )"
   then
     posix_store__debug '_posix_store__get_field_from_entry' \
       "field separated: '${___field}'"
-    posix_adapter__echo "$___field"
+    echo "$___field"
   else
     posix_store__debug '_posix_store__get_field_from_entry' \
       'error during field separation..'
@@ -521,7 +521,7 @@ _posix_store__get_value_for_key() {
       'key found in the store:' "$___result"
 
     # This is a very unlikely case, but should be prepared for it..
-    ___line_count="$(posix_adapter__echo "$___result" | posix_adapter__wc --lines)"
+    ___line_count="$(echo "$___result" | posix_adapter__wc --lines)"
     if [ "$___line_count" -ne '1' ]
     then
       posix_store__debug_list '_posix_store__store__get_value_for_key' \
@@ -535,14 +535,14 @@ _posix_store__get_value_for_key() {
     # Read more: https://stackoverflow.com/a/21913014/1565331
     # shellcheck disable=SC2001
     ___value="$( \
-      posix_adapter__echo "$___result" | \
+      echo "$___result" | \
       posix_adapter__sed --expression "s/${___search_pattern}//" \
     )"
 
     posix_store__debug_list '_posix_store__get_value_for_key' \
       'value separated:' "$___value"
 
-    posix_adapter__echo "$___value"
+    echo "$___value"
     return 0
 
   else
@@ -585,7 +585,7 @@ _posix_store__insert() {
     'inserting key-value pair to the store file..'
 
   ___line="${___key}${___separator}${___value}"
-  posix_adapter__echo "$___line" >> "$___store_file"
+  echo "$___line" >> "$___store_file"
 
   posix_store__debug '_posix_store__insert' \
     'key-value pair has been inserted to the store file'
@@ -706,7 +706,7 @@ _posix_store__encode() {
     'encoding value:' "$___value"
 
   ___encoded="$( \
-    posix_adapter__echo "$___value" | \
+    echo "$___value" | \
     posix_adapter__xxd --plain | \
     posix_adapter__tr --delete '\n' \
   )"
@@ -714,7 +714,7 @@ _posix_store__encode() {
   posix_store__debug_list '_posix_store__encode' \
     'value encoded:' "$___encoded"
 
-  posix_adapter__echo "$___encoded"
+  echo "$___encoded"
 }
 
 #==============================================================================
@@ -744,12 +744,12 @@ _posix_store__decode() {
     'decoding value:' "$___encoded_value"
 
   ___value="$( \
-    posix_adapter__echo "$___encoded_value" | \
+    echo "$___encoded_value" | \
     posix_adapter__xxd --revert --plain \
   )"
 
   posix_store__debug_list '_posix_store__decode' \
     'value decoded:' "$___value"
 
-  posix_adapter__echo "$___value"
+  echo "$___value"
 }
